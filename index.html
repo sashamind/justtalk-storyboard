@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>JustTalk Explainer Storyboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="eyebrow">JustTalk Interview Sprint · эксплейнер</div>
+    <h1>Раскадровки закадра</h1>
+    <p class="muted" style="max-width:70ch">Четыре варианта текста для ролика 40–46 секунд и условная раскадровка под каждый. Общие правила по визуалу, звуку и фактам — во вкладке «Общее». Ячейки «Референс» заполняются картинками, которые вы пришлёте в чат.</p>
+    <div class="meta">
+      <span class="chip">16:9</span><span class="chip">~45 сек</span><span class="chip">2D-моушн + 3D-элементы</span><span class="chip">VO: ElevenLabs v3</span><span class="chip">Музыка: Suno</span>
+    </div>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="Разделы">
+    <button role="tab" id="tab-common" data-panel="common">Общее</button>
+    <button role="tab" id="tab-a" data-panel="a">A · Основной</button>
+    <button role="tab" id="tab-b" data-panel="b">B · На собеседовании</button>
+    <button role="tab" id="tab-c" data-panel="c">C · Голос</button>
+    <button role="tab" id="tab-d" data-panel="d">D · Тень</button>
+    <div class="toolbar"><button class="btn" id="toggle-ru" type="button">Скрыть перевод</button></div>
+  </nav>
+
+  <main id="panels"></main>
+</div>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
