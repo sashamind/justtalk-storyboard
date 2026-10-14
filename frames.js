@@ -110,7 +110,7 @@ const FRAMES = (() => {
       + wave(124,44,6,4,16) + wave(172,44,6,4,16) + down(160,62) + wave(138,96,11,4,16,[-1,-1],'f-brand') + T(160,150,'Shorter pauses','t-ink',10,'middle')
       + eq(237,56,[10,22,8,18,6],6,4,'f-mute') + down(260,62) + eq(237,116,[20,26,30,26,20],6,4) + T(260,150,'Steadier','t-ink',10,'middle'),
     'c-8': strikes,
-    'c-9': () => eq(137,62,[20,30,36,30,20],6,4) + logo(160,104) + pill(160,120,132,20,'Start with a $99 Audit'),
+    'c-9': packshot,
 
     // ---- D ----
     'd-1': () => floor() + person(215,150,128,'f-shadow') + person(110,150,46,'f-brand'),
@@ -133,7 +133,12 @@ const FRAMES = (() => {
   };
 })();
 
+// Кадры, которые пока скрыты (будут перерисованы): вместо наброска показывается заглушка с вопросительным знаком.
+// Сами наброски остались в FRAMES — чтобы вернуть кадр, достаточно убрать его ключ отсюда.
+const HIDDEN_FRAMES = new Set(['a-1','a-2','a-3','a-9','d-1','d-2','d-3','d-4','d-6']);
+const PLACEHOLDER = () => '<circle cx="160" cy="90" r="30" class="ph-ring"/><text x="160" y="104" text-anchor="middle" class="ph-q">?</text>';
+
 function frameHTML(key, label){
-  const draw = FRAMES[key];
+  const draw = HIDDEN_FRAMES.has(key) ? PLACEHOLDER : FRAMES[key];
   return `<svg class="frame" viewBox="0 0 320 180" role="img" aria-label="Условный кадр: ${String(label).replace(/"/g,'&quot;')}">${draw ? draw() : ''}</svg>`;
 }

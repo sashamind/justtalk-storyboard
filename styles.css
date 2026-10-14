@@ -217,6 +217,7 @@ pre.code{margin:0;font-family:var(--mono);font-size:12px;white-space:pre-wrap;wo
 /* Условные кадры (frames.js): классы заливок, обводок и текста внутри SVG */
 .frame{display:block;width:100%;height:auto;border-radius:10px;border:1px solid var(--line);background:radial-gradient(120% 90% at 12% 0%,var(--brand-soft),transparent 62%),var(--slot)}
 .frame text{font-family:var(--body)}
+.ph-ring{fill:none;stroke:var(--muted);stroke-opacity:.35;stroke-width:2;stroke-dasharray:5 5}.ph-q{fill:var(--muted);fill-opacity:.45;font:700 40px var(--display)} /* заглушка скрытого кадра */
 .f-ink{fill:var(--ink)}.f-brand{fill:var(--brand)}.f-soft{fill:var(--brand-soft)}.f-white{fill:var(--on-brand)}
 .f-mute{fill:var(--muted);opacity:.4}.f-ghost{fill:var(--brand);opacity:.14}.f-shadow{fill:var(--ink);opacity:.13}
 .f-card{fill:var(--surface);stroke:var(--line)}.f-ghostcard{fill:var(--surface);stroke:var(--line);opacity:.55}
