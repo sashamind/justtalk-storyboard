@@ -25,7 +25,12 @@ function mountCal3D(el){
   const ground = new THREE.Mesh(new THREE.PlaneGeometry(30, 30), new THREE.ShadowMaterial({opacity:.12}));
   ground.rotation.x = -Math.PI/2; ground.receiveShadow = true; scene.add(ground);
 
-  const geo = new THREE.BoxGeometry(.86, 1, .86); geo.translate(0, .5, 0);
+  // плитка со скруглёнными углами и мягкой фаской: скруглённый квадрат в плане, выдавленный вверх; основание на y = 0
+  const S = .86, R = .16, B = .035, sh = new THREE.Shape(), h2 = S / 2 - B;
+  sh.moveTo(-h2 + R, -h2); sh.lineTo(h2 - R, -h2); sh.quadraticCurveTo(h2, -h2, h2, -h2 + R); sh.lineTo(h2, h2 - R); sh.quadraticCurveTo(h2, h2, h2 - R, h2);
+  sh.lineTo(-h2 + R, h2); sh.quadraticCurveTo(-h2, h2, -h2, h2 - R); sh.lineTo(-h2, -h2 + R); sh.quadraticCurveTo(-h2, -h2, -h2 + R, -h2);
+  const geo = new THREE.ExtrudeGeometry(sh, {depth:1 - 2 * B, bevelEnabled:true, bevelThickness:B, bevelSize:B, bevelSegments:3, curveSegments:8});
+  geo.rotateX(-Math.PI / 2); geo.translate(0, B, 0); geo.computeVertexNormals();
   const tiles = Array.from({length:N}, (_, i) => {
     const m = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({roughness:.55, metalness:0}));
     const c = i % 7, r = Math.floor(i / 7);
