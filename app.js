@@ -247,7 +247,7 @@ function cursorRig(cur, DUR = 820){
 // Цикл замыкается без затемнения: в конце всё отматывается назад — облачко сдувается, ярлыки возвращаются на тень, человечек уменьшается.
 (() => {
   const svg = document.querySelector('.shadow-demo svg'); if(!svg) return;
-  const NS = 'http://www.w3.org/2000/svg', LOOP = 8600, BASE = 110, SH = {cx:152, h:96}; // пол — нижний край плашки
+  const NS = 'http://www.w3.org/2000/svg', LOOP = 11500, BASE = 110, SH = {cx:152, h:96}; // пол — нижний край плашки
   const clamp = v => Math.min(1, Math.max(0, v)), ease = p => p<.5 ? 4*p*p*p : 1-Math.pow(-2*p+2,3)/2, lerp = (a, b, q) => a + (b - a) * q;
   const mk = (tag, cls, parent = svg) => { const e = document.createElementNS(NS, tag); if(cls) e.setAttribute('class', cls); parent.appendChild(e); return e; };
   // прозрачность ставим через style и домножаем на базовую из CSS-класса (f-shadow, f-mute, f-tag), иначе класс её перебьёт
@@ -257,28 +257,46 @@ function cursorRig(cur, DUR = 820){
   // Человечек: голова, туловище, руки и ноги — скруглённые «таблетки»; класс цвета висит на группе,
   // чтобы у полупрозрачной тени не темнели места, где детали перекрываются
   const person = cls => { const p = mk('g', cls, g); return {g:p, head:mk('circle', '', p), torso:mk('rect', '', p),
-    arms:[mk('path', 'arm', p), mk('path', 'arm', p)], legs:[mk('rect', '', p), mk('rect', '', p)]}; };
-  const draw1 = (p, cx, h, wave = 0) => {
+    arms:[mk('path', 'arm', p), mk('path', 'arm', p)], legs:[mk('path', '', p), mk('path', '', p)]}; };
+  // shrug 0…1 — пожатие плечами: плечи и руки приподнимаются, руки разводятся в стороны, голова чуть втягивается
+  // akimbo 0…1 — «руки в боки»: уверенная поза, локти в стороны, кисти на поясе
+  const draw1 = (p, cx, h, wave = 0, shrug = 0, akimbo = 0) => {
     // голова отделена от плеч чистым ровным зазором, как в пиктограммах, — без «шеи»
     // Плечо и рука сопрягаются: радиус верхних углов туловища равен радиусу руки (aw/2), и центр скругления у них общий.
     // Рука поворачивается вокруг этого центра, поэтому её верхний полукруг всегда совпадает с дугой плеча — без стыка.
     const tw = h*.29, tt = BASE - h*.715, th = h*.405, lw = h*.135, aw = h*.115, al = h*.39, rs = aw / 2;
-    const r = h*.115; set(p.head, {cx, cy:BASE-h+r, r}); // голова круглая
-    set(p.torso, {x:cx-tw/2, y:tt, width:tw, height:th, rx:rs});
+    const up = h*.06*shrug, r = h*.115; set(p.head, {cx, cy:BASE-h+r+h*.02*shrug, r}); // голова круглая
+    set(p.torso, {x:cx-tw/2, y:tt-up, width:tw, height:th+up, rx:rs});
     [-1, 1].forEach((sd, i) => {
       // ноги начинаются глубоко внутри туловища: скруглённый верх ног спрятан, переход в тело цельный;
       // толще внутрь: внешний край почти на месте (cx ± .1475h), между ногами узкий просвет
-      set(p.legs[i], {x:cx + sd*h*.08 - lw/2, y:tt+th-h*.17, width:lw, height:BASE-(tt+th-h*.17), rx:lw/2});
-      const ax = cx + sd*(tw/2 - rs), ay = tt + rs, ang = sd*-15 + (sd > 0 ? -wave : 0); // центр скругления плеча
+      // низ ног (ступни) — прямой срез по полу, скруглён только верх, который всё равно спрятан в туловище
+      const lx = cx + sd*h*.08 - lw/2, ly = tt + th - h*.17;
+      set(p.legs[i], {d:`M${lx} ${BASE}V${ly + lw/2}a${lw/2} ${lw/2} 0 0 1 ${lw} 0V${BASE}Z`});
+      const ax = cx + sd*(tw/2 - rs), ay = tt - up + rs, ang = sd*-15 + (sd > 0 ? -wave : 0); // центр скругления плеча
       // рука — толстая линия с круглыми концами, слегка выгнутая наружу по дуге; круглый конец у плеча
       // центрирован в центре скругления плеча, так что сопряжение сохраняется при любом наклоне
       const t = ang * Math.PI / 180, dx = -Math.sin(t), dy = Math.cos(t), L = al - aw, bow = h * .028;
       const ex = ax + dx * L, ey = ay + dy * L, qx = ax + dx * L / 2 + sd * Math.cos(t) * bow, qy = ay + dy * L / 2 + sd * Math.sin(t) * bow;
-      set(p.arms[i], {d:`M${ax} ${ay}Q${qx} ${qy} ${ex} ${ey}`, 'stroke-width':aw});
+      // пожатие: локоть остаётся у бока, предплечье с кистью разводится в сторону и чуть вверх (ладони «вверх»)
+      const sx = ax + sd * L * .12, sy = ay + L * .6, sex = ax + sd * L * .36, sey = ay + L * .9; // рука почти прямая, лишь слегка отведена кистью наружу
+      const Q = [qx + (sx - qx) * shrug, qy + (sy - qy) * shrug], E = [ex + (sex - ex) * shrug, ey + (sey - ey) * shrug];
+      // руки в боки: от плеча наружу к острому локтю и обратно к боку туловища на уровне пояса — между рукой и телом виден просвет
+      const kx = ax + sd * L * .7, ky = ay + L * .47, hx = cx + sd * (tw / 2 - aw * .55), hy = tt - up + th * .86; // кисть упирается в бок ниже — у бедра
+      Q[0] += (kx - Q[0]) * akimbo; Q[1] += (ky - Q[1]) * akimbo; E[0] += (hx - E[0]) * akimbo; E[1] += (hy - E[1]) * akimbo;
+      // кубическая кривая с обеими опорами в одной точке: в обычной позе — плавная дуга, в позе «руки в боки» — чёткий локоть
+      // обычная поза: первая опора на 2/3 пути к Q (эквивалент квадратичной дуги). Руки в боки: первая опора вдоль бока вниз-наружу,
+      // чтобы рука выходила из плеча по той же касательной, что и в покое (сопряжение с плечом не ломается), вторая — в локте
+      const D = [ax + (Q[0] - ax) * 2/3, ay + (Q[1] - ay) * 2/3], Dk = [kx, ky]; // в позе «руки в боки» обе опоры в локте — длинные руки с чётким локтем
+      const C1 = [D[0] + (Dk[0] - D[0]) * akimbo, D[1] + (Dk[1] - D[1]) * akimbo], C2 = [E[0] + (Q[0] - E[0]) * (2/3 + akimbo/3), E[1] + (Q[1] - E[1]) * (2/3 + akimbo/3)];
+      set(p.arms[i], {d:`M${ax} ${ay}C${C1[0]} ${C1[1]} ${C2[0]} ${C2[1]} ${E[0]} ${E[1]}`, 'stroke-width':aw});
     });
   };
   const shadow = person('f-shadow'), fig = person('f-brand');
-  const bubble = mk('rect', 'f-card', g), tail = mk('path', 'f-card', g);
+  // облачко и его хвостик — один контур, поэтому обводка не проходит между ними и хвостик сливается с облачком
+  const bubble = mk('path', 'f-card', g);
+  const bubblePath = (x, y, w, h, r) => `M${x+r} ${y}H${x+w-r}A${r} ${r} 0 0 1 ${x+w} ${y+r}V${y+h-r}A${r} ${r} 0 0 1 ${x+w-r} ${y+h}`
+    + `H${x+14}L${x+3} ${y+h+6}L${x+8} ${y+h}H${x+r}A${r} ${r} 0 0 1 ${x} ${y+h-r}V${y+r}A${r} ${r} 0 0 1 ${x+r} ${y}Z`;
   const words = [mk('rect', 'f-mute', g), mk('rect', 'f-mute', g)];
   // Подписи для зрителя страницы: что здесь тень, а что фигура; в финале — итог
   const cap = (txt, anchor) => { const e = mk('text', 'cap', g); e.textContent = txt; e.setAttribute('text-anchor', anchor); return e; };
@@ -286,31 +304,41 @@ function cursorRig(cur, DUR = 820){
   // Ярлыки: тонкие строки, выровненные по левому краю и по центру туловища тени; в облачке — шире, с ровными полями
   const TAG = 4, GAP = 5, W_SH = [21, 14, 18], W_BU = [40, 27, 34], BLOCK = 3 * TAG + 2 * GAP;
   const tags = W_SH.map(() => ({base:mk('rect', 'f-tag', g), lit:mk('rect', 'f-brand', g)}));
-  draw1(shadow, SH.cx, SH.h);
+  const back3 = p => 1 + 2.2*Math.pow(p-1,3) + 1.2*Math.pow(p-1,2); // лёгкий перелёт при росте тени
   const frame = T => {
     const t = ((T % LOOP) + LOOP) % LOOP;
-    const back = (d, len) => 1 - ease(clamp((t - 6600 - d) / len)); // обратный ход 6600–7800 к первому кадру
-    const appear = 1, speak = ease(clamp((t - 2000) / 350)) * back(0, 700), dim = clamp((t - 2200) / 400);
-    const grow = ease(clamp((t - 3000) / 1600)) * back(100, 1200);
-    fade(shadow.g, appear);
+    // Пролог: тень вырастает из маленького человечка прямо у него за спиной (100–800), сразу появляются подписи (850–1250), тень отъезжает на своё место (900–1600),
+    // в ней проявляются ярлыки (1600–1900) и по одному загораются, пожатие плечами (3300–4350).
+    // Дальше как раньше, со сдвигом +2500: говорит 4500, растёт 5500–7100, обратный ход 9100–10400, тень возвращается за спину 10400–10900 и сжимается обратно в человечка 10900–11300.
+    const back = (d, len) => 1 - ease(clamp((t - 9100 - d) / len));
+    const ret = back(1300, 500), slide = ease(clamp((t - 900) / 700)) * ret, sx = lerp(80, SH.cx, slide);
+    const rise = (t < 5000 ? back3(clamp((t - 100) / 700)) : 1) * back(1800, 400), shH = lerp(34, SH.h, rise);
+    const appear = clamp((t - 1600) / 300) * ret, capsIn = ease(clamp((t - 850) / 400)) * ret;
+    const speak = ease(clamp((t - 4500) / 350)) * back(0, 700), dim = clamp((t - 4700) / 400);
+    const grow = ease(clamp((t - 5500) / 1600)) * back(100, 1200);
+    draw1(shadow, sx, shH);
     const fx = lerp(80, SH.cx - 10, grow), fh = lerp(34, SH.h, grow);
-    draw1(fig, fx, fh, 40 * speak * (1 - .4 * grow)); // говорит — поднимает руку
-    set(capShadow, {x:SH.cx - SH.h*.15, y:BASE - SH.h + SH.h*.13}); fade(capShadow, 1 - clamp(grow * 2.5));
-    set(capFig, {x:fx - fh*.2 - 4, y:BASE - fh + fh*.13 + 2}); fade(capFig, 1 - clamp(grow * 3));
+    // в начале, пока маленький, — один раз спокойно пожимает плечами (поднял, задержал, опустил), потом говорит и поднимает руку
+    const shrug = ease(clamp((t - 3300) / 350)) * (1 - ease(clamp((t - 3950) / 400)));
+    // вырос и встал поверх тени — упирает руки в боки (уверенная поза); на обратном ходе опускает их первым делом
+    // поднятая при разговоре рука опускается уже в начале роста, а руки в боки — к концу роста
+    const lower = 1 - ease(clamp((t - 5300) / 500)), akimbo = ease(clamp((t - 6500) / 500)) * back(0, 500);
+    draw1(fig, fx, fh, 40 * speak * lower, shrug * (1 - speak), akimbo);
+    set(capShadow, {x:sx - SH.h*.15, y:BASE - SH.h + SH.h*.13}); fade(capShadow, capsIn * (1 - clamp(grow * 2.5)));
+    set(capFig, {x:fx - fh*.2 - 4, y:BASE - fh + fh*.13 + 2}); fade(capFig, capsIn * (1 - clamp(grow * 3)));
     set(capEnd, {x:14, y:30}); fade(capEnd, clamp((grow - .7) / .3));
     const bx = lerp(fx + 10, 170, grow), by = lerp(BASE - 34 - 14, 6, grow), bw = lerp(30, 58, grow), bh = lerp(14, BLOCK + 16, grow);
-    set(bubble, {x:bx, y:by, width:bw, height:bh, rx:Math.min(7, bh/2)}); fade(bubble, speak);
-    set(tail, {d:`M${bx+8} ${by+bh-1}l-5 6 11-6z`}); fade(tail, speak);
+    set(bubble, {d:bubblePath(bx, by, bw, bh, Math.min(7, bh/2))}); fade(bubble, speak);
     words.forEach((w, i) => { set(w, {x:bx+6, y:by+4+i*5, width:[12, 8][i], height:2.5, rx:1.25}); fade(w, speak * (1 - clamp(grow * 2))); });
     tags.forEach((tg, i) => {
-      const lit = clamp((t - 700 - i * 350) / 250) * (1 - dim), q = ease(clamp((t - 3000 - i * 150) / 1400)) * back(i * 120, 1000);
+      const lit = clamp((t - 1700 - i * 350) / 250) * (1 - dim), q = ease(clamp((t - 5500 - i * 150) / 1400)) * back(i * 120, 1000);
       const torsoTop = BASE - SH.h * .715, torsoH = SH.h * .405, row = i * (TAG + GAP);
-      const x = lerp(SH.cx - 10.5, bx + 9, q), y = lerp(torsoTop + (torsoH - BLOCK) / 2 + row, by + 8 + row, q), w = lerp(W_SH[i], W_BU[i], q);
+      const x = lerp(sx - 10.5, bx + 9, q), y = lerp(torsoTop + (torsoH - BLOCK) / 2 + row, by + 8 + row, q), w = lerp(W_SH[i], W_BU[i], q);
       [tg.base, tg.lit].forEach(r => set(r, {x, y, width:w, height:TAG, rx:TAG/2}));
       fade(tg.base, appear * (1 - q)); fade(tg.lit, Math.max(lit, q));
     });
   };
-  if(matchMedia('(prefers-reduced-motion: reduce)').matches){ frame(6000); return; }
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches){ frame(8500); return; }
   let start = 0, raf = 0;
   const tick = now => { frame(now - start); raf = requestAnimationFrame(tick); };
   new IntersectionObserver(([e]) => { cancelAnimationFrame(raf); if(e.isIntersecting){ start = performance.now(); raf = requestAnimationFrame(tick); } }).observe(svg);
