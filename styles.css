@@ -49,7 +49,7 @@ h1 .accent{color:var(--brand)}
 audio{display:block;width:100%}
 .panel{display:grid;gap:22px}
 .intro{display:grid;gap:10px;max-width:70ch}
-.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr));gap:14px} /* min(…,100%): на узком экране колонка не шире контейнера */
 .box{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;display:grid;gap:10px;min-width:0;align-content:start}
 .box ul,.intro ul{margin:0;padding-left:18px;display:grid;gap:6px}
 .box ul{gap:22px}
@@ -80,7 +80,7 @@ pre.code{margin:0;font-family:var(--mono);font-size:12px;white-space:pre-wrap;wo
 /* пункт с тремя плашками календаря — на всю ширину блока, плашки в ряд; остальные пункты по три в ряд без пустот */
 .els > .wide{grid-column:1/-1}
 .els > .wide > p{max-width:70ch}
-.cal-plates{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-top:14px}
+.cal-plates{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr));gap:12px;margin-top:14px}
 .cal-plates .demo{margin-top:0;height:220px}
 .els{counter-reset:el;gap:44px 36px;margin-top:18px}
 .box:has(.els){padding:28px 28px 34px}
@@ -94,6 +94,8 @@ pre.code{margin:0;font-family:var(--mono);font-size:12px;white-space:pre-wrap;wo
 .hl{color:var(--brand);font-weight:600}
 .note{font-size:13px;color:var(--muted);border-left:3px solid var(--brand);padding-left:10px}
 @media (max-width:760px){
+  .box:has(.els){padding:20px 16px 26px}
+  .cur-demo .stage-wrap{max-width:calc(100% - 28px)} /* наклонённое 3D-окно не вылезает за край узкой плашки */
   .scene{grid-template-columns:1fr}
 }
 /* Живые примеры в блоке сквозных элементов (app.js): эквалайзер-конструктор и календарь → плитки */
