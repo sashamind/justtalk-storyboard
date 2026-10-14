@@ -2,72 +2,44 @@ const panels = document.getElementById('panels');
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
 function refHTML(key){
-  const list = REFS[key] || [];
-  if(!list.length) return `<span class="tag">Референс</span><span>Пришлите картинку в чат<br>с пометкой «${esc(key.toUpperCase())}»</span>`;
-  return list.map(r => `<figure><img src="${esc(r.src)}" alt="${esc(r.caption||'Референс')}" loading="lazy">${r.caption?`<figcaption>${esc(r.caption)}</figcaption>`:''}</figure>`).join('');
+  return (REFS[key] || []).map(r => `<figure><img src="${esc(r.src)}" alt="${esc(r.caption||'Референс')}" loading="lazy">${r.caption?`<figcaption>${esc(r.caption)}</figcaption>`:''}</figure>`).join('');
 }
 
 function variantHTML(id, v){
-  const script = v.scenes.map(s => `<p>${esc(s.vo)}</p><p class="ru">${esc(s.ru)}</p>`).join('');
   const scenes = v.scenes.map((s,i) => {
     const key = `${id}-${i+1}`;
+    const refs = refHTML(key);
     return `<article class="scene">
-      <div class="tc"><span class="n">${String(i+1).padStart(2,'0')}</span><span class="t">${s.t}</span><span class="name">${esc(s.name)}</span></div>
+      <div class="shot">${frameHTML(key, s.name)}<div class="tc"><span class="n">${String(i+1).padStart(2,'0')}</span><span class="name">${esc(s.name)}</span></div></div>
       <div class="body">
         <div><div class="lbl">Голос</div><p class="vo">${esc(s.vo)}</p><p class="ru">${esc(s.ru)}</p></div>
         ${s.os?`<div><div class="lbl">Текст на экране</div><span class="ost">${esc(s.os)}</span></div>`:''}
         <div><div class="lbl">Что происходит</div><p>${esc(s.vis)}</p></div>
+        ${refs?`<div><div class="lbl">Референс</div><div class="ref">${refs}</div></div>`:''}
       </div>
-      <div class="ref" data-key="${key}">${refHTML(key)}</div>
     </article>`;
   }).join('');
-  return `<section class="intro"><div class="eyebrow">Вариант ${id.toUpperCase()}</div><h2>${esc(v.title.split('· ')[1])}</h2><p>${esc(v.idea)}</p></section>
-  <div class="script">
-    <div class="script-head"><div class="eyebrow">Закадр целиком</div><button class="btn copy" type="button" data-id="${id}">Скопировать для ElevenLabs</button></div>
-    ${script}
-  </div>
+  return `<section class="intro"><h2>${esc(v.title)}</h2><p>${esc(v.idea)}</p></section>
   <div class="scenes">${scenes}</div>`;
 }
 
 const order = ['common','a','b','c','d'];
 order.forEach(id => {
+  if(id === order[1]) panels.insertAdjacentHTML('beforeend', `<section class="panel boards"><h2 class="group">Условные варианты раскадровок</h2>${BOARDS_INTRO}</section>`);
   const sec = document.createElement('section');
-  sec.className = 'panel'; sec.id = 'p-' + id; sec.setAttribute('role','tabpanel');
+  sec.className = 'panel'; sec.id = 'p-' + id;
   sec.innerHTML = id === 'common' ? COMMON : variantHTML(id, VARIANTS[id]);
   panels.appendChild(sec);
 });
-document.querySelectorAll('.ref[data-key^="common"]').forEach(el => el.innerHTML = refHTML(el.dataset.key));
+panels.insertAdjacentHTML('beforeend', `<section class="panel">${OUTRO}</section>`);
 
-function show(id){
-  if(!order.includes(id)) id = 'common';
-  order.forEach(k => {
-    document.getElementById('p-'+k).hidden = k !== id;
-    document.getElementById('tab-'+k).setAttribute('aria-selected', k === id ? 'true' : 'false');
-  });
-  try{ localStorage.setItem('jt-tab', id) }catch(e){}
-}
-document.querySelectorAll('nav.tabs [data-panel]').forEach(b => b.addEventListener('click', () => { show(b.dataset.panel); history.replaceState(null,'','#'+b.dataset.panel); }));
-let start = (location.hash||'').slice(1);
-if(!order.includes(start)){ try{ start = localStorage.getItem('jt-tab') || 'common' }catch(e){ start = 'common' } }
-show(start);
+// Логотип: столбики играют при наведении, а после ухода курсора доигрывают цикл до исходного положения
+const logo = document.querySelector('.logo');
+const bars = logo.querySelectorAll('.brand');
+logo.addEventListener('mouseenter', () => bars.forEach(b => b.classList.add('play')));
+bars.forEach(b => b.addEventListener('animationiteration', () => { if(!logo.matches(':hover')) b.classList.remove('play'); }));
 
-const ruBtn = document.getElementById('toggle-ru');
-function setRu(hide){ document.body.classList.toggle('hide-ru', hide); ruBtn.textContent = hide ? 'Показать перевод' : 'Скрыть перевод'; try{ localStorage.setItem('jt-hide-ru', hide?'1':'0') }catch(e){} }
-let hideRu = false; try{ hideRu = localStorage.getItem('jt-hide-ru') === '1' }catch(e){}
-setRu(hideRu);
-ruBtn.addEventListener('click', () => setRu(!document.body.classList.contains('hide-ru')));
-
-document.addEventListener('click', e => {
-  const b = e.target.closest('.copy'); if(!b) return;
-  const text = VARIANTS[b.dataset.id].scenes.map(s => s.vo.replace(/^"|"$/g,'"')).join('\n\n');
-  const done = () => { const t = b.textContent; b.textContent = 'Скопировано'; setTimeout(() => b.textContent = t, 1500); };
-  if(navigator.clipboard && navigator.clipboard.writeText){
-    navigator.clipboard.writeText(text).then(done, () => fallback(text, b, done));
-  } else fallback(text, b, done);
-});
-function fallback(text, b, done){
-  const ta = document.createElement('textarea'); ta.value = text; ta.setAttribute('readonly',''); ta.style.position='fixed'; ta.style.opacity='0';
-  document.body.appendChild(ta); ta.select();
-  try{ document.execCommand('copy'); done(); }catch(e){ b.textContent = 'Выделите текст вручную'; }
-  ta.remove();
-}
+// Аудиопримеры: при запуске одного остальные ставятся на паузу
+document.addEventListener('play', e => {
+  document.querySelectorAll('audio').forEach(el => { if(el !== e.target) el.pause(); });
+}, true);
