@@ -1,7 +1,7 @@
 /* Layout: panels stacked on one page (common, then one per variant); scenes are a vertical timeline of cards with a ref slot each */
 :root{
   --bg:#f6f8fc; --surface:#ffffff; --ink:#0d1b3d; --muted:#5a6788; --line:#dde3f0;
-  --brand:#007aff; --brand-soft:#e6f1ff; --navy:#0a1f4d; --slot:#f0f4fb; --frame-dark:#101828; --frame-avatar:#35405a; --on-brand:#ffffff;
+  --brand:#007aff; --brand-soft:#e6f1ff; --navy:#0a1f4d; --slot:#f0f4fb; --frame-dark:#101828; --frame-avatar:#35405a; --on-brand:#ffffff; --live:#ff3b30;
   --display:"Unbounded","Golos Text",system-ui,sans-serif;
   --body:"Golos Text",system-ui,-apple-system,"Segoe UI",sans-serif;
   --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
@@ -24,6 +24,7 @@ p{margin:0}
 .muted{color:var(--muted)}
 header.top{display:grid;gap:14px;margin-bottom:96px}
 .title{display:grid;gap:4px}
+h1 .accent{color:var(--brand)}
 .links{justify-self:start}
 .links summary{cursor:pointer;font-weight:500;font-size:14px;color:var(--brand)}
 .links summary:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
@@ -51,6 +52,7 @@ audio{display:block;width:100%}
 .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
 .box{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;display:grid;gap:10px;min-width:0;align-content:start}
 .box ul,.intro ul{margin:0;padding-left:18px;display:grid;gap:6px}
+.box ul{gap:22px}
 .swatches{display:flex;flex-wrap:wrap;gap:10px}
 .sw{display:grid;gap:4px;font-family:var(--mono);font-size:11px;color:var(--muted)}
 .sw b{display:block;width:64px;height:40px;border-radius:8px;border:1px solid var(--line)}
@@ -75,6 +77,11 @@ pre.code{margin:0;font-family:var(--mono);font-size:12px;white-space:pre-wrap;wo
 .vo.silent{font-weight:400;color:var(--muted);font-style:italic}
 .ru{color:var(--muted);font-size:13.5px}
 .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
+/* пункт с тремя плашками календаря — на всю ширину блока, плашки в ряд; остальные пункты по три в ряд без пустот */
+.els > .wide{grid-column:1/-1}
+.els > .wide > p{max-width:70ch}
+.cal-plates{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-top:14px}
+.cal-plates .demo{margin-top:0;height:220px}
 .els{counter-reset:el;gap:44px 36px;margin-top:18px}
 .box:has(.els){padding:28px 28px 34px}
 .els .lbl{counter-increment:el;font-size:12px;font-weight:600;color:var(--ink);margin-bottom:12px}
@@ -84,10 +91,129 @@ pre.code{margin:0;font-family:var(--mono);font-size:12px;white-space:pre-wrap;wo
 .ref img{border-radius:8px;width:100%;height:auto;display:block}
 .ref figure{margin:0;display:grid;gap:4px}
 .ref figcaption{font-size:11.5px}
+.hl{color:var(--brand);font-weight:600}
 .note{font-size:13px;color:var(--muted);border-left:3px solid var(--brand);padding-left:10px}
 @media (max-width:760px){
   .scene{grid-template-columns:1fr}
 }
+/* Живые примеры в блоке сквозных элементов (app.js): эквалайзер-конструктор и календарь → плитки */
+.demo{margin-top:14px;height:110px;border-radius:10px;border:1px solid var(--line);background:radial-gradient(120% 90% at 12% 0%,var(--brand-soft),transparent 62%),var(--slot);display:grid;place-items:center}
+.demo svg{width:100%;max-width:240px;height:auto;overflow:visible}
+.demo{position:relative;overflow:hidden}
+.demo-tag{position:absolute;top:8px;left:10px;font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--muted)}
+.cal3d-demo{height:170px}
+.calbook-demo{height:230px}
+.cal3d-demo canvas,.calbook-demo canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.eq-demo rect{fill:var(--brand)}
+.cal-demo .c-empty{fill:var(--line)}.cal-demo .c-prac{fill:var(--brand);fill-opacity:.35}.cal-demo .c-coach{fill:var(--brand);fill-opacity:.65}.cal-demo .c-mock{fill:var(--brand)}
+.cal-demo circle{fill:var(--on-brand);stroke:color-mix(in srgb,var(--brand) 35%,transparent);stroke-width:.6;filter:drop-shadow(0 1px 1.5px color-mix(in srgb,var(--ink) 35%,transparent))}
+.cal-demo text{font-family:var(--body);font-weight:700;fill:var(--brand)}
+/* Реальный коуч: окно звонка, где у коуча включается «живое видео», курсор раскрывает его на всё окно, затем всё возвращается (app.js) */
+.coach-demo{height:200px;padding:14px}
+.cw{width:100%;max-width:300px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:8px;display:grid;gap:8px;box-shadow:0 6px 18px color-mix(in srgb,var(--ink) 10%,transparent)}
+.cw-head{display:flex;align-items:center;gap:2px;font-size:10px;color:var(--muted)}
+.cw-head i{width:3px;height:6px;border-radius:2px;background:var(--brand)}.cw-head i:nth-child(2){height:10px}
+.cw-head span{margin-left:6px;padding-left:6px;border-left:1px solid var(--line)}
+.cw-tiles{display:flex;gap:6px;height:118px;transition:gap .7s}
+.cw-tile{position:relative;flex:1 1 0;min-width:0;border-radius:8px;background:var(--frame-dark);overflow:hidden;display:grid;place-items:center;transition:flex-grow .7s cubic-bezier(.65,0,.35,1),opacity .5s}
+.cw .av{width:32px;height:32px;border-radius:50%;background:var(--frame-avatar);color:var(--on-brand);display:grid;place-items:center;font:600 13px var(--body);transition:opacity .45s,transform .45s}
+.cw .nm{position:absolute;left:6px;bottom:6px;font:600 9px var(--body);color:var(--on-brand);display:flex;align-items:center;gap:4px;padding:2px 6px;border-radius:999px;background:color-mix(in srgb,var(--frame-dark) 55%,transparent)}
+.cw .video{position:absolute;inset:0;aspect-ratio:auto;border:0;border-radius:0;opacity:0;transition:opacity .6s}
+.cw .sil{position:absolute;left:50%;bottom:0;width:62%;max-width:120px;transform:translateX(-50%);fill:var(--frame-dark);fill-opacity:.55;opacity:0;transition:opacity .6s}
+.cw .sil .head{transform-box:fill-box;transform-origin:50% 100%;animation:nod 2.6s ease-in-out infinite}
+@keyframes nod{0%,100%{transform:translateY(0) rotate(0)}30%{transform:translateY(1.5px) rotate(-3deg)}60%{transform:translateY(-.5px) rotate(2deg)}}
+.cw .live{position:absolute;top:6px;right:6px;font:600 8px var(--mono);letter-spacing:.06em;color:var(--on-brand);padding:2px 6px;border-radius:999px;background:color-mix(in srgb,var(--frame-dark) 55%,transparent);opacity:0;transition:opacity .45s}
+.cw .live::before{content:"";display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--live);margin-right:4px;vertical-align:1px;animation:blink 1.2s steps(2,start) infinite}
+@keyframes blink{50%{opacity:.25}}
+.cw .talk{display:inline-flex;gap:1.5px;align-items:flex-end;height:8px}
+.cw .talk b{width:2px;height:8px;border-radius:1px;background:var(--on-brand);transform:scaleY(.3);transform-origin:bottom}
+.cw .shot{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .6s}
+.cw .has-shot .video,.cw .has-shot .sil{display:none}
+.coach-demo.on .coach .shot,.coach-demo.on .coach .video,.coach-demo.on .coach .sil,.coach-demo.on .coach .live{opacity:1}
+.coach-demo.on .coach .av{opacity:0;transform:scale(.6)}
+.coach-demo.on .talk b{animation:talk .7s ease-in-out infinite}.coach-demo.on .talk b:nth-child(2){animation-duration:.55s}.coach-demo.on .talk b:nth-child(3){animation-duration:.8s;animation-delay:-.3s}
+@keyframes talk{0%,100%{transform:scaleY(.3)}50%{transform:scaleY(1)}}
+.coach-demo.big .cw-tiles{gap:0}.coach-demo.big .you{flex-grow:.0001;opacity:0}
+@media (prefers-reduced-motion: reduce){.cw .sil .head,.cw .live::before,.coach-demo.on .talk b{animation:none}}
+/* Счётчики: крупное число прокручивается как одометр, под ним подпись и столько же точек/плиток/столбиков (app.js) */
+.stat-demo{height:180px}
+.stat{display:grid;justify-items:center;gap:8px}
+.odo{display:flex;font:700 48px/1 var(--display);color:var(--brand);letter-spacing:-.02em}
+.odo-col{display:block;width:.86em;height:1em;overflow:hidden;transition:width .5s cubic-bezier(.65,0,.35,1)}
+.odo-col.off{width:0}
+.odo .strip{display:flex;flex-direction:column;transition:transform .9s cubic-bezier(.65,0,.35,1)}
+.odo .strip span{height:1em;text-align:center}
+.stat-lbl{font:600 10.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);transition:opacity .25s}
+.stat-lbl.out{opacity:0}
+.stat-dots{display:grid;gap:3px;justify-content:center;align-content:center;align-items:end;min-height:30px}
+.stat-dots i{display:block;border-radius:50%;background:var(--brand);width:6px;height:6px;transform:scale(0);transition:transform .35s cubic-bezier(.34,1.56,.64,1)}
+.stat-dots i.on{transform:scale(1)}
+.stat-dots.tile i{width:7px;height:7px;border-radius:2px}
+.stat-dots.bar i{width:9px;height:26px;border-radius:4.5px;transform-origin:bottom}
+.stat-dots.dot i{width:11px;height:11px}
+.stat-dots.wide i{width:34px;height:9px;border-radius:4.5px}
+/* Человечек и тень: ярлыки опыта на тени гаснут, человечек растёт до тени, ярлыки переходят в его облачко (app.js) */
+.shadow-demo{height:160px;place-items:end center}
+.shadow-demo svg{max-width:300px;display:block}
+/* руки человечка — линии: цвет обводки берём тот же, что у заливки группы (синий герой / тень) */
+.shadow-demo .arm{fill:none;stroke-linecap:round}.shadow-demo .f-brand .arm{stroke:var(--brand)}.shadow-demo .f-shadow .arm{stroke:var(--ink)}
+.shadow-demo .cap{font-family:var(--mono);font-size:7px;font-weight:600;letter-spacing:.03em;fill:var(--muted)}
+/* Курсор: наводится на строку (подсветка), нажимает Start (рябь), раскрывает карточку фокуса и указывает на неё (app.js) */
+.cur-demo{height:220px;padding:16px;place-items:start center}
+/* прозрачность — на обёртке, а не на 3D-сцене: в Safari opacity у элемента с preserve-3d «сплющивает» объём, и слои перещёлкиваются */
+.cur-demo .stage-wrap{width:100%;max-width:260px;perspective:760px;opacity:0;will-change:opacity}
+/* псевдо-3D: окно и карточка развёрнуты в пространстве; появление, покачивание, поворот на клике и нажатие кнопки считает JS по времени цикла */
+.cur-demo .stage{width:100%;transform-style:preserve-3d;transform:rotateX(14deg) rotateY(-12deg) rotateZ(1.5deg);will-change:transform}
+.ui{width:100%;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 10px 6px;display:grid;gap:4px;transform-style:preserve-3d;box-shadow:0 2px 0 color-mix(in srgb,var(--line) 90%,var(--ink)),0 18px 30px -8px color-mix(in srgb,var(--ink) 22%,transparent)}
+.ui-head{display:flex;justify-content:space-between;align-items:center;font:700 13px var(--body);color:var(--ink);padding:0 4px 4px}
+.ui-prog{display:flex;gap:3px}.ui-prog i{width:14px;height:4px;border-radius:2px;background:var(--brand)}.ui-prog i:last-child{background:var(--line)}
+.ui-row{display:flex;align-items:center;gap:8px;padding:6px 4px;border-radius:8px;background:var(--surface);transition:background .3s,transform .35s,box-shadow .35s}
+.ui-row + .ui-row{border-top:1px solid var(--line)}
+.ui-row .av{width:22px;height:22px;border-radius:50%;background:var(--frame-avatar);flex:none}
+.ui-row .tx{display:grid;flex:1;min-width:0;line-height:1.25}.ui-row .tx b{font:600 11px var(--body);color:var(--ink)}.ui-row .tx small{font-size:9.5px;color:var(--muted)}
+.ui-row .chk{width:18px;height:18px;border-radius:50%;background:var(--brand-soft);color:var(--brand);font-size:10px;display:grid;place-items:center}
+.ui-row .go{font:600 10px var(--body);color:var(--on-brand);background:var(--brand);border-radius:6px;padding:5px 10px;transition:box-shadow .25s ease}
+.cur-demo.hov1 .r1{background:var(--brand-soft);transform:translateZ(14px);box-shadow:0 10px 16px -6px color-mix(in srgb,var(--ink) 25%,transparent)}
+.cur-demo.press1 .r1{transform:scale(.97);background:color-mix(in srgb,var(--brand-soft) 45%,var(--surface))} /* строка зажата вместе с курсором; на отпускании загорается и всплывает (hov1) */
+.cur-demo.hov2 .go{box-shadow:0 4px 10px -2px color-mix(in srgb,var(--brand) 55%,transparent)}
+.cur-demo .ring{position:absolute;left:0;top:0;width:30px;height:30px;margin:-15px 0 0 -15px;border-radius:50%;border:2px solid var(--brand);opacity:0;pointer-events:none;translate:var(--rx,0) var(--ry,0)}
+.cur-demo.click .ring{animation:ripple .6s ease-out}
+@keyframes ripple{0%{opacity:.8;transform:scale(.3)}100%{opacity:0;transform:scale(1.5)}}
+.cur-demo .pop{position:absolute;left:50%;top:calc(100% - 6px);width:88%;transform-origin:50% 0;transform:translate(-50%,0) translateZ(26px) rotateX(-85deg);opacity:0;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 10px;display:grid;gap:3px;box-shadow:0 8px 20px color-mix(in srgb,var(--ink) 12%,transparent);transition:opacity .35s,transform .6s cubic-bezier(.34,1.56,.64,1),border-color .3s}
+.cur-demo .pop small{font:600 8.5px var(--mono);letter-spacing:.06em;color:var(--brand)}.cur-demo .pop span{font-size:10.5px;line-height:1.3;color:var(--ink)}
+/* карточка откидывается уже приподнятой над окном (translateZ), иначе на полпути она пересекает плоскость окна
+   и в Safari кнопка Start под ней мигает */
+.cur-demo.open .pop{opacity:1;transform:translate(-50%,0) translateZ(26px) rotateX(0)}
+/* уход карточки: не складывается обратно, а мягко опускается и растворяется; к исходному «сложенному» виду возвращается уже невидимой */
+.cur-demo.leave .pop{opacity:0;transform:translate(-50%,10px) translateZ(26px) rotateX(0) scale(.95);transition:opacity .4s ease-in,transform .5s cubic-bezier(.4,0,1,1)}
+/* клик: окно коротко «доворачивается» в пространстве и пружинит обратно, карточка фокуса откидывается вниз на шарнире */
+.cur-demo.hov3 .pop{border-color:var(--brand)}
+/* общий курсор плашек «Реальный коуч» и «Курсор» (.pcur): двигает JS (cursorRig в app.js); здесь вид — синий с мягким градиентом, белая обводка и тень */
+.cur-demo .stage{position:relative}
+.demo .pcur{max-width:none;position:absolute;left:0;top:0;width:28px;height:39px;transform-origin:1px 1px;opacity:0;transition:opacity .3s;filter:drop-shadow(0 6px 5px color-mix(in srgb,var(--ink) 35%,transparent));will-change:transform}
+.pcur .cur-face{fill:url(#cur-g);stroke:var(--on-brand);stroke-width:1.2;stroke-linejoin:round}
+.cur-on > .pcur{opacity:1}
+@media (prefers-reduced-motion: reduce){.cur-demo.click .ring{animation:none}}
+/* Кинетический текст: фразы из закадра собираются по словам в ритм голоса (app.js строит слова и подгоняет --fit под ширину плашки).
+   Анимируются только transform и opacity — размытие (filter) на каждом слове давало подтормаживания, особенно в Safari */
+.kt-demo{height:170px;padding:16px}
+.kt-demo > .kt{grid-area:1/1} /* два слоя в одной ячейке: старая фраза уходит, новая проявляется поверх — без пустой паузы */
+.kt{width:100%;display:grid;gap:4px;justify-items:center;text-align:center;font-family:var(--display);font-weight:700;color:var(--ink);font-size:calc(17px * var(--fit,1));line-height:1.15;letter-spacing:-.01em}
+.kt .ln{position:relative;display:block;white-space:nowrap}
+.kt .w{display:inline-block;margin:0 .14em;opacity:0;transform:translateY(.35em) scale(.98);animation:kt-in .75s cubic-bezier(.22,1,.36,1) both;animation-delay:calc(var(--i) * var(--step));will-change:transform,opacity}
+.kt .acc{color:var(--brand)}
+.kt .big{font-size:calc(46px * var(--fit,1));line-height:1;letter-spacing:-.03em}
+.kt .mid{font-size:calc(32px * var(--fit,1));line-height:1;letter-spacing:-.02em}
+.kt .big.w,.kt .mid.w{animation-name:kt-pop;animation-duration:.9s}
+.kt .ln.strike::after{content:"";position:absolute;left:-4px;right:-4px;top:54%;height:3px;border-radius:2px;background:var(--brand);transform:scaleX(0);transform-origin:left;animation:kt-strike .5s cubic-bezier(.65,0,.35,1) both;animation-delay:calc(var(--n) * var(--step) + 350ms)}
+.kt.out .w{animation:kt-out .5s cubic-bezier(.4,0,.2,1) both;animation-delay:calc(var(--i) * 30ms)} /* both: пока слово ждёт своей очереди, оно остаётся видимым, а не гаснет — это и было мигание */
+.kt.out .ln.strike::after{animation:kt-fade .4s ease both}
+@keyframes kt-fade{from{transform:scaleX(1);opacity:1}to{transform:scaleX(1);opacity:0}}
+@keyframes kt-in{to{opacity:1;transform:none}}
+@keyframes kt-pop{0%{opacity:0;transform:scale(.7)}55%{opacity:1;transform:scale(1.04)}100%{opacity:1;transform:none}}
+@keyframes kt-out{from{opacity:1;transform:none}to{opacity:0;transform:translateY(-.3em)}}
+@keyframes kt-strike{to{transform:scaleX(1)}}
+@media (prefers-reduced-motion: reduce){.kt .w{animation:none;opacity:1;transform:none}.kt .ln.strike::after{animation:none;transform:scaleX(1)}}
 /* Условные кадры (frames.js): классы заливок, обводок и текста внутри SVG */
 .frame{display:block;width:100%;height:auto;border-radius:10px;border:1px solid var(--line);background:radial-gradient(120% 90% at 12% 0%,var(--brand-soft),transparent 62%),var(--slot)}
 .frame text{font-family:var(--body)}

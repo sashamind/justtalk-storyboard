@@ -3,6 +3,11 @@ const REFS = {
   // "a-5": [{src:"refs/a5-1.jpg", caption:"Окно звонка + отчёт"}],
 };
 
+/* ---------- Реальный коуч: фото (jpg/png/webp) или короткое видео без звука (mp4/webm) для плашки «Реальный коуч» ----------
+   Пусто — показывается условный силуэт на градиенте. Пример: 'refs/coach.mp4' */
+// Сейчас стоит заглушка — стоковое видео Pexels «Casual businessman looking at camera and talking» (pexels.com/video/casual-businessman-looking-at-camera-and-talking-5941016/), не коуч JustTalk.
+const COACH_MEDIA = 'refs/coach-placeholder.mp4', COACH_MEDIA_NOTE = 'стоковое видео-заглушка';
+
 const VARIANTS = {
 a:{
   title:"Вариант A",
@@ -105,19 +110,22 @@ const COMMON = `
 
 <div class="box">
   <h3>Варианты сквозных элементов</h3>
+  <p class="muted" style="font-size:13px">Стилистика примеров пока условная.</p>
   <div class="cols els">
-    <div><div class="lbl">Эквалайзер из логотипа</div><p>Может стать частью ролика или переходов между сценами: реагирует на закадровый голос, меняется вместе с ним и подчёркивает отдельные акценты.</p></div>
-    <div><div class="lbl">Календарь → плитки</div><p>Образ календаря и отдельных его элементов может стать визуализацией спринта: дней, этапов и движения по ним.</p></div>
-    <div><div class="lbl">Реальный коуч</div><p>Когда закадр говорит о преподавателе-человеке, возможно, стоит сделать вставку с реально отснятым коучем, например в окне звонка?</p></div>
-    <div><div class="lbl">Счётчики</div><p>Можно сделать акцент на цифрах и визуализировать их. Например: 28 дней, 3 мока, 7 сессий с коучем, 22 дня практики, 3 звонка в день (66 за спринт), 3 месяца практики и так далее.</p></div>
-    <div><div class="lbl">Человечек и тень</div><p>Плоская фигурка в фирменном синем. Тень — её настоящий опыт. Работает на отрезке в начале и в конце, не на весь ролик.</p></div>
+    <div><div class="lbl">Эквалайзер из логотипа</div><p>Может стать частью ролика или переходов между сценами: реагирует на закадровый голос, меняется вместе с ним и подчёркивает отдельные акценты.</p><div class="demo eq-demo" aria-hidden="true"><svg viewBox="0 0 240 80"></svg></div></div>
+    <div><div class="lbl">Реальный коуч</div><p>Когда закадр говорит о преподавателе-человеке, возможно, стоит сделать вставку с реально отснятым коучем, например в окне звонка?</p><div class="demo coach-demo" aria-hidden="true"><div class="cw"><div class="cw-head"><i></i><i></i><i></i><span>Mock interview</span></div><div class="cw-tiles"><div class="cw-tile you"><span class="av">V</span><span class="nm">You</span></div><div class="cw-tile coach"><b class="grad video" style="--a:#B4D0F4;--b:#8FA6E6;--c:#2F9EE9;--d:#74C9F1;--e:#4A9FE4"></b><svg class="sil" viewBox="0 0 100 80"><path class="body" d="M10 80c0-22 18-34 40-34s40 12 40 34z"/><g class="head"><ellipse cx="50" cy="30" rx="15" ry="18"/></g></svg><span class="av">S</span><span class="live">LIVE</span><span class="nm">Coach <i class="talk"><b></b><b></b><b></b></i></span></div></div></div><svg class="cur pcur" viewBox="-1 -1 16 22"><path class="cur-face" d="M0 0V15l4-3.6 3 6.4 2.6-1.2-3-6.3H12z"/></svg></div></div>
+    <div><div class="lbl">Счётчики</div><p>Можно сделать акцент на цифрах и визуализировать их. Например: 28 дней, 3 мока, 7 сессий с коучем, 22 дня практики, 3 звонка в день (66 за спринт), 3 месяца практики и так далее.</p><div class="demo stat-demo" aria-hidden="true"></div></div>
+    <div class="wide"><div class="lbl">Календарь → плитки</div><p>Образ календаря и отдельных его элементов может стать визуализацией спринта: дней, этапов и движения по ним.</p><div class="cal-plates"><div class="demo cal-demo" aria-hidden="true"><span class="demo-tag">2D</span><svg viewBox="0 0 240 80"></svg></div><div class="demo cal3d-demo" aria-hidden="true"><span class="demo-tag">3D · плитки</span></div><div class="demo calbook-demo" aria-hidden="true"><span class="demo-tag">3D · перекидной календарь</span></div></div></div>
+    <div><div class="lbl">Курсор</div><p>Курсор как элемент ролика: направляет взгляд, взаимодействует с интерфейсом, раскрывает следующие элементы.</p><div class="demo cur-demo" aria-hidden="true"><div class="stage-wrap"><div class="stage"><div class="ui"><div class="ui-head"><b>Today</b><span class="ui-prog"><i></i><i></i><i></i></span></div><div class="ui-row r1"><span class="av"></span><span class="tx"><b>Proudest Work</b><small>Done</small></span><span class="chk">✓</span></div><div class="ui-row r2"><span class="av"></span><span class="tx"><b>Your first 90 days</b><small>AI practice call</small></span><span class="go">Start</span></div></div><div class="pop"><small>FOCUS · PROOF POINT</small><span>Name the problem, your action and what changed.</span></div></div></div><span class="ring"></span><svg class="cur pcur" viewBox="-1 -1 16 22"><defs><linearGradient id="cur-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" style="stop-color:color-mix(in srgb,var(--brand) 55%,#fff)"/><stop offset=".55" style="stop-color:var(--brand)"/><stop offset="1" style="stop-color:color-mix(in srgb,var(--brand) 70%,#000)"/></linearGradient></defs><path class="cur-face" d="M0 0V15l4-3.6 3 6.4 2.6-1.2-3-6.3H12z"/></svg></div></div>
+    <div><div class="lbl">Кинетический текст</div><p>Ключевые фразы закадра дублируются текстом на экране: слова появляются в ритм голоса, акценты выделяются цветом и размером, лишнее зачёркивается.</p><div class="demo kt-demo" aria-hidden="true"><div class="kt"></div><div class="kt"></div></div></div>
+    <div><div class="lbl">Человек и его тень (опыт)</div><p>Силуэт человека в стилистике будущего ролика. Тень — её настоящий опыт. Работает на отрезке в начале и в конце, не на весь ролик.</p><div class="demo shadow-demo" aria-hidden="true"><svg viewBox="0 0 240 110"></svg></div></div>
   </div>
 </div>
 
 <div class="cols">
   <div class="box">
     <h3>Пэкшот</h3>
-    <p>На «Just talk» эквалайзер собирается в логотип JustTalk синхронно с голосом. После, без голоса: «The 28-day Interview Sprint», плашка «Start with a $99 Audit», адрес interview.justtalk.ai.</p>
+    <p>На <span class="hl">«Just talk»</span> эквалайзер собирается в логотип JustTalk синхронно с голосом. После, без голоса: <span class="hl">«The 28-day Interview Sprint»</span>, плашка <span class="hl">«Start with a $99 Audit»</span>, адрес interview.justtalk.ai.</p>
   </div>
   <div class="box">
     <h3>Вопросы</h3>
