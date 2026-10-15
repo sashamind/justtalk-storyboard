@@ -57,7 +57,8 @@ document.querySelectorAll('.eq-demo svg').forEach(svg => {
     { hold:1600, at:(i)   => ({cy:40, h:Math.abs(i-7)>1 ? 0 : i===7 ? 29 : 16}) },
     { hold:2200, at:(i,t) => ({cy:40, h:(8+30*Math.abs(Math.sin(i*1.7)+Math.sin(i*.6))/2)*(.75+.35*Math.sin(t/180+i*1.3))}) },
     { hold:1800, at:(i)   => { const dx = Math.abs(X(i)+W/2-120), top = dx<=54 ? 72-26*(1-(dx/54)**2) : 72, head = dx<16 ? 2.5*Math.sqrt(256-dx*dx) : 0;
-        return {cy:(top+72)/2, h:72-top, cy2:22, h2:head}; } },
+        // плечи уходят за нижний край плашки (низ на y=130, плашка обрезает), крайние столбики остаются нулевыми
+        return dx<=54 ? {cy:(top+130)/2, h:130-top, cy2:22, h2:head} : {cy:72, h:0, cy2:22, h2:0}; } },
     { hold:1500, at:(i)   => ({cy:40, h:i%7===0?17:W}) },
     { hold:1500, at:(i)   => { const h=6+i*3.6; return {cy:66-h/2, h}; } },
     { hold:1500, at:(i)   => ({cy:along([[36,40],[84,60],[204,16]], X(i)+W/2), h:W}) },
@@ -359,8 +360,9 @@ function cursorRig(cur, DUR = 820){
 // Курсор: окно выплывает, курсор влетает в кадр, наводится на строку (подсветка), нажимает Start (рябь), раскрывает карточку фокуса,
 // указывает на неё и уходит; затем карточка прячется и окно уплывает. Позиции считаются по реальным элементам плашки.
 // Движение живое: курсор летит по дуге с разгоном и торможением, наклоняется по ходу движения, при нажатии проминается.
-(() => {
-  const el = document.querySelector('.cur-demo'); if(!el) return;
+// Плашек две (на светлом и на мятном градиенте) — у каждой свой цикл; градиент описан в CSS, курсорная грань — общий #cur-g.
+document.querySelectorAll('.cur-demo').forEach(el => {
+  const base = el.className;
   const cur = el.querySelector('.cur'), stage = el.querySelector('.stage'), wrap = el.querySelector('.stage-wrap'), btn = el.querySelector('.go');
   const T = {r1:el.querySelector('.r1'), go:el.querySelector('.go'), pop:el.querySelector('.pop')};
   // shown — окно на месте; без него окно спрятано (выплывает в начале цикла и уплывает в конце)
@@ -376,7 +378,7 @@ function cursorRig(cur, DUR = 820){
   const rig = cursorRig(cur); rig.place('out', point('out'));
   let shown = '';
   const apply = (cls, at, now) => { rig.go(at, point(at), now); const key = cls + '|' + at; if(key === shown) return; shown = key;
-    rig.held = cls.includes('hold'); el.className = 'demo cur-demo ' + cls;
+    rig.held = cls.includes('hold'); el.className = base + ' ' + cls;
     if(cls.includes('click')){ rig.click(now); el.style.setProperty('--rx', rig.to[0] + 'px'); el.style.setProperty('--ry', rig.to[1] + 'px'); } };
   // Окно, покачивание, поворот на клике и нажатие кнопки — одной функцией от времени цикла, без CSS-переходов: так ничего не мигает
   const back = p => 1 + 2.70158*Math.pow(p-1,3) + 1.70158*Math.pow(p-1,2);
@@ -392,12 +394,12 @@ function cursorRig(cur, DUR = 820){
   const tick = now => { const t = (now - start) % LOOP; let s = STEPS[0]; for(const st of STEPS) if(t >= st[0]) s = st; apply(s[1], s[2], now); rig.move(now); scene(t); raf = requestAnimationFrame(tick); };
   new IntersectionObserver(([e]) => { cancelAnimationFrame(raf); if(e.isIntersecting){ start = performance.now(); raf = requestAnimationFrame(tick); } }).observe(el);
   rig.move(0); scene(0);
-})();
+});
 
 // Кинетический текст: ключевые фразы закадра по очереди собираются по словам (проявляются снизу), акценты — синим
 // и крупно, «No scripts. No memorising.» зачёркивается; затем слова уходят вверх и появляется следующая фраза.
-(() => {
-  const el = document.querySelector('.kt-demo'); if(!el) return;
+// Плашек две (на светлом и на голубом градиенте) — у каждой свой цикл.
+document.querySelectorAll('.kt-demo').forEach(el => {
   const layers = [...el.querySelectorAll('.kt')]; let cur = 0; // два слоя: пока один уходит, во втором уже собирается следующая фраза
   // фраза: строки → слова [текст, классы]; step — шаг между словами, strike — зачеркнуть строки
   const PHRASES = [
@@ -421,4 +423,4 @@ function cursorRig(cur, DUR = 820){
   const next = () => { k = (k + 1) % PHRASES.length; cur = 1 - cur; render(layers[cur], k);
     timer = setTimeout(() => { layers[cur].classList.add('out'); timer = setTimeout(next, OVERLAP); }, HOLD); };
   new IntersectionObserver(([e]) => { clearTimeout(timer); if(e.isIntersecting){ layers.forEach(l => { l.className = 'kt'; l.innerHTML = ''; }); k = k < 0 ? -1 : k - 1; next(); } }).observe(el);
-})();
+});
