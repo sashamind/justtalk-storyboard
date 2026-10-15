@@ -14,7 +14,7 @@ function variantHTML(id, v){
       <div class="body">
         <div><div class="lbl">Голос</div><p class="vo">${esc(s.vo)}</p><p class="ru">${esc(s.ru)}</p></div>
         ${s.os?`<div><div class="lbl">Текст на экране</div><span class="ost">${esc(s.os)}</span></div>`:''}
-        <div><div class="lbl">Что происходит</div><p>${esc(s.vis)}</p></div>
+        <div class="vis"><div class="lbl">Что происходит</div><p>${esc(s.vis)}</p></div>
         ${refs?`<div><div class="lbl">Референс</div><div class="ref">${refs}</div></div>`:''}
       </div>
     </article>`;
@@ -90,7 +90,7 @@ document.addEventListener('play', e => {
   const el = (tag, attrs) => { const e = document.createElementNS(NS, tag); for(const k in attrs) e.setAttribute(k, attrs[k]); svg.appendChild(e); return e; };
   const g = svg.appendChild(document.createElementNS(NS, 'g'));
   const tiles = Array.from({length:N}, () => { const r = document.createElementNS(NS, 'rect'); r.setAttribute('rx', 2); g.appendChild(r); return r; });
-  const label = el('text', {'font-size':12}), title = el('text', {x:120, y:16, 'font-size':12, 'text-anchor':'middle'}), dot = el('circle', {r:2.6});
+  const label = el('text', {'font-size':12}), title = el('text', {x:120, y:16, 'font-size':12, 'text-anchor':'middle'}), trail = el('path', {class:'trail'}), dot = el('circle', {r:3.2});
   title.textContent = '28 days';
   const grid = i => ({x:79.5+(i%7)*12, y:11.5+Math.floor(i/7)*12, w:9, h:9});
   const track = i => ({x:7.8+i*7.8, y:50, w:6, h:6});
@@ -111,10 +111,21 @@ document.addEventListener('play', e => {
     label.textContent = 'Day ' + day; label.setAttribute('x', 172); label.setAttribute('y', 44);
     label.setAttribute('opacity', t<300 ? 0 : 1-m(0));
     title.setAttribute('opacity', rise);
-    const STOPS = [0,1,7,14,15,21,28], hop = (t-4600)/450, j = Math.min(STOPS.length-1, Math.floor(hop)), f = hop-Math.floor(hop), on = t>=4600 && t<7600;
+    const STOPS = [0,1,7,14,15,21,28], on = t>=4600 && t<7600;
     const top = i => track(i).y - (MOCK.includes(i) ? 12 : COACH.includes(i) ? 4 : 0);
-    if(on){ const k = STOPS[j], n = STOPS[Math.min(STOPS.length-1, j+1)], p = k===n ? 0 : ease(f), x0 = track(k).x+3, x1 = track(n).x+3;
-      dot.setAttribute('cx', x0+(x1-x0)*p); dot.setAttribute('cy', top(k)+(top(n)-top(k))*p-5-Math.sin(Math.PI*p)*(6+(n-k)*.6)); }
+    // позиция шарика в момент tt (прыжки по ключевым дням по дуге); по ней же строится шлейф
+    const at = tt => { const hop = Math.max(0, (tt-4600)/450), j = Math.min(STOPS.length-1, Math.floor(hop)), f = hop-Math.floor(hop);
+      const k = STOPS[j], n = STOPS[Math.min(STOPS.length-1, j+1)], p = k===n ? 0 : ease(f), x0 = track(k).x+3, x1 = track(n).x+3;
+      return [x0+(x1-x0)*p, top(k)+(top(n)-top(k))*p-5-Math.sin(Math.PI*p)*(6+(n-k)*.6)]; };
+    if(on){ const [x, y] = at(t); dot.setAttribute('cx', x); dot.setAttribute('cy', y); }
+    // шлейф: сужающаяся к хвосту лента вдоль пути шарика за последние ~200 мс (одна фигура — без «бусин» на стыках)
+    const TN = 14, pts = [], tStart = 4600;
+    for(let i = 0; i <= TN; i++){ const tt = t - i*15; if(!on || tt < tStart) break; pts.push(at(tt)); }
+    if(pts.length < 2){ trail.setAttribute('d', ''); } else {
+      const L = [], R = [];
+      pts.forEach((pt, i) => { const a = pts[Math.max(0, i-1)], b = pts[Math.min(pts.length-1, i+1)], dx = b[0]-a[0], dy = b[1]-a[1], len = Math.hypot(dx, dy) || 1;
+        const w = 1.7 * (1 - i/TN), nx = -dy/len*w, ny = dx/len*w; L.push([pt[0]+nx, pt[1]+ny]); R.push([pt[0]-nx, pt[1]-ny]); });
+      trail.setAttribute('d', 'M' + L.map(p => p.join(' ')).join('L') + 'L' + R.reverse().map(p => p.join(' ')).join('L') + 'Z'); }
     dot.setAttribute('opacity', on || (t>=7600 && t<8200) ? 1 : 0);
     g.setAttribute('opacity', 1-clamp((t-8200)/600)); title.setAttribute('opacity', rise*(1-clamp((t-8200)/600)));
   };

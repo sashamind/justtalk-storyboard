@@ -10,8 +10,14 @@ const FRAMES = (() => {
 
   // Детали
   const floor = () => L(16,150,304,150);
-  const person = (cx,base,h,c) => { const r=h*.16, bw=h*.4, bh=h*.62;
-    return C(cx,base-h+r,r,c) + `<path d="M${cx-bw/2} ${base}v${-(bh-bw/2)}a${bw/2} ${bw/2} 0 0 1 ${bw} 0v${bh-bw/2}z" class="${c}"/>`; };
+  // человечек как в анимации «Человек и его тень» (app.js, draw1) в спокойной позе: круглая голова, туловище, ноги со срезом по полу,
+  // руки — толстые линии, выходящие из центра скругления плеча; класс цвета на группе, чтобы у полупрозрачной тени не темнели перекрытия
+  const person = (cx,base,h,c) => { const f = v => +v.toFixed(2), tw=h*.29, tt=base-h*.715, th=h*.405, lw=h*.135, aw=h*.115, rs=aw/2, L=h*.39-aw, bow=h*.028, r=h*.115;
+    const part = sd => { const lx=cx+sd*h*.08-lw/2, ly=tt+th-h*.17, ax=cx+sd*(tw/2-rs), ay=tt+rs, t=sd*-15*Math.PI/180, dx=-Math.sin(t), dy=Math.cos(t);
+      const ex=ax+dx*L, ey=ay+dy*L, qx=ax+dx*L/2+sd*Math.cos(t)*bow, qy=ay+dy*L/2+sd*Math.sin(t)*bow;
+      return `<path d="M${f(lx)} ${base}V${f(ly+lw/2)}a${f(lw/2)} ${f(lw/2)} 0 0 1 ${f(lw)} 0V${base}Z"/>`
+        + `<path class="arm" stroke-width="${f(aw)}" d="M${f(ax)} ${f(ay)}Q${f(qx)} ${f(qy)} ${f(ex)} ${f(ey)}"/>`; };
+    return `<g class="${c}"><circle cx="${cx}" cy="${f(base-h+r)}" r="${f(r)}"/>${R(f(cx-tw/2),f(tt),f(tw),f(th),f(rs),'')}${part(-1)}${part(1)}</g>`; };
   const eq = (px,base,hs,w=6,gap=4,c='f-brand') => hs.map((h,i) => R(px+i*(w+gap),base-h,w,h,w/2,c)).join('');
   const card = (px,py,w,h) => R(px,py,w,h,6,'f-card');
   const lines = (px,py,w,n,gap=7,c='f-mute') => Array.from({length:n},(_,i) => R(px,py+i*gap,w*[1,.75,.55,.85,.65,.9][i%6],3,1.5,c)).join('');
@@ -77,9 +83,11 @@ const FRAMES = (() => {
 
     // ---- B ----
     'b-1': () => callWin(30,14,260,124,{coach:true}) + bubble(146,106,154,30,'f-card','r') + T(156,125,'Tell me about yourself.','t-ink',10.5) + R(286,115,1.5,13,0,'f-brand'),
-    'b-2': () => R(140,140,40,36,6,'f-head') + C(160,84,66,'f-head')
-      + card(112,46,44,30) + eq(122,70,[8,14,10],5,3) + card(164,46,44,30) + lines(171,56,30,3,6) + eq(137,128,[14,22,28,22,14],6,4),
-    'b-3': () => C(52,84,34,'f-head') + eq(37,98,[12,18,22,18,12],4,3) + T(92,90,'Answer','t-ink',16,'start',700) + T(156,89,'Answer','t-ink',9)
+    // голова в профиль (смотрит влево), упрощённый силуэт из прямых граней со скруглёнными углами (по мотивам референса с вырезанной головой);
+    // голова синяя: карточки-мысли белые, ровный голос — белым эквалайзером
+    'b-2': () => `<path class="f-brand" d="M134 180L134 156Q134 150 128 150L114 150Q106 150 106 142L106 118Q106 114 102 114L96 114Q92 114 93.6 110.3L96 105Q100 96 100.8 86.2L102.6 63.4Q104 46 119 37L120.3 36.2Q134 28 149.9 26.1L152.1 25.9Q168 24 183.5 27.9L190.5 29.6Q208 34 218.8 48.4L222.4 53.2Q232 66 232 82L232 90Q232 104 222.1 113.9L211.1 124.9Q204 132 204.4 142L206 180Z"/>`
+      + card(122,56,40,28) + eq(131,78,[8,14,10],5,3) + card(168,56,40,28) + lines(174,65,28,3,6) + eq(144,128,[14,22,28,22,14],6,4,'f-white'),
+    'b-3': () => C(52,84,34,'f-brand') + eq(37,98,[12,18,22,18,12],4,3,'f-white') + T(92,90,'Answer','t-ink',16,'start',700) + T(156,89,'Answer','t-ink',9)
       + callWin(196,36,112,96) + bubble(204,108,50,18) + T(212,120,'Answer','t-mute',6.5) + eq(112,134,[10,7,5,3,2],5,3),
     'b-4': () => callWin(12,48,84,60) + arrow(100,78,114) + calendar(120,40) + arrow(230,78,244) + tiles(250,100,29,1.4,.7,{h:5,hh:12,on:29})
       + T(160,160,'The Interview Sprint · 28 days','t-ink',11,'middle'),

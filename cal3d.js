@@ -38,8 +38,11 @@ function mountCal3D(el){
     m.userData = {c, r, x:m.position.x, z:m.position.z};
     scene.add(m); return m;
   });
-  const ball = new THREE.Mesh(new THREE.SphereGeometry(.24, 32, 16), new THREE.MeshStandardMaterial({roughness:.3}));
+  const ball = new THREE.Mesh(new THREE.SphereGeometry(.27, 32, 16), new THREE.MeshStandardMaterial({roughness:.3}));
   ball.castShadow = true; scene.add(ball);
+  // синяя обводка шарика: чуть больший шар, видимый только изнутри (BackSide), — белый шарик читается на светлых плитках
+  const rim = new THREE.Mesh(new THREE.SphereGeometry(.27, 32, 16), new THREE.MeshBasicMaterial({side:THREE.BackSide}));
+  rim.scale.setScalar(1.22); ball.add(rim);
 
   // Цвета из токенов: пустая плитка — --line, практика / коуч / мок — --brand с разной плотностью на фоне --surface
   let C = {};
@@ -48,7 +51,7 @@ function mountCal3D(el){
     const css = getComputedStyle(document.documentElement), tok = n => new THREE.Color(css.getPropertyValue(n).trim() || '#888');
     const brand = tok('--brand'), surface = tok('--surface'), lin = c => c.convertSRGBToLinear();
     C = {empty:lin(tok('--line')), prac:lin(surface.clone().lerp(brand, .35)), coach:lin(surface.clone().lerp(brand, .65)), mock:lin(brand.clone()), ball:lin(new THREE.Color('#ffffff'))};
-    ball.material.color.copy(C.ball);
+    ball.material.color.copy(C.ball); rim.material.color.copy(C.mock);
   };
   readColors();
   const scheme = window.matchMedia('(prefers-color-scheme: dark)');
@@ -84,7 +87,7 @@ function mountCal3D(el){
     const k = STOPS[j], n = STOPS[Math.min(STOPS.length - 1, j + 1)], p = t < 4500 || k === n ? 0 : ease(hop - Math.floor(hop));
     const a = tiles[k].userData, b = tiles[n].userData;
     ball.visible = t >= 4300 && t < 7700;
-    ball.position.set(a.x + (b.x - a.x) * p, top(k) + (top(n) - top(k)) * p + .24 + Math.sin(Math.PI * p) * (.7 + (n - k) * .06), a.z + (b.z - a.z) * p);
+    ball.position.set(a.x + (b.x - a.x) * p, top(k) + (top(n) - top(k)) * p + .27 + Math.sin(Math.PI * p) * (.7 + (n - k) * .06), a.z + (b.z - a.z) * p);
     ball.scale.setScalar(ease(clamp((t - 4300) / 200)));
     renderer.render(scene, camera);
   };
