@@ -110,7 +110,7 @@ const COMMON = `
 
 <div class="box">
   <h3>Варианты сквозных элементов</h3>
-  <p class="muted" style="font-size:13px">Стилистика примеров пока условная.</p>
+  <p class="muted" style="font-size:13px">Стилистика примеров — условная.</p>
   <div class="cols els">
     <div><div class="lbl">Эквалайзер из логотипа</div><p>Может стать частью ролика или переходов между сценами: реагирует на закадровый голос, меняется вместе с ним и подчёркивает отдельные акценты.</p><div class="demo eq-demo" aria-hidden="true"><svg viewBox="0 0 240 80"></svg></div></div>
     <div><div class="lbl">Реальный коуч</div><p>Когда закадр говорит о преподавателе-человеке, возможно, стоит сделать вставку с реально отснятым коучем, например в окне звонка?</p><div class="demo coach-demo" aria-hidden="true"><div class="cw"><div class="cw-head"><i></i><i></i><i></i><span>Mock interview</span></div><div class="cw-tiles"><div class="cw-tile you"><span class="av">V</span><span class="nm">You</span></div><div class="cw-tile coach"><b class="grad video" style="--a:#B4D0F4;--b:#8FA6E6;--c:#2F9EE9;--d:#74C9F1;--e:#4A9FE4"></b><svg class="sil" viewBox="0 0 100 80"><path class="body" d="M10 80c0-22 18-34 40-34s40 12 40 34z"/><g class="head"><ellipse cx="50" cy="30" rx="15" ry="18"/></g></svg><span class="av">S</span><span class="live">LIVE</span><span class="nm">Coach <i class="talk"><b></b><b></b><b></b></i></span></div></div></div><svg class="cur pcur" viewBox="-1 -1 16 22"><path class="cur-face" d="M0 0V15l4-3.6 3 6.4 2.6-1.2-3-6.3H12z"/></svg></div></div>
