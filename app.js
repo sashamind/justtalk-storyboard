@@ -47,8 +47,8 @@ document.addEventListener('play', e => {
 // Эквалайзер-конструктор: 15 столбиков на постоянных местах по кругу собираются в логотип, голос, силуэт человека, дни, рост и галочку.
 // Столбики не ездят по горизонтали: только растут, сжимаются или уходят в ноль, если образу нужны не все.
 // В каждой колонке есть второй сегмент (обычно нулевой): из него силуэту достаётся голова отдельно от плеч.
-(() => {
-  const svg = document.querySelector('.eq-demo svg'); if(!svg) return;
+// Плашек две (синий эквалайзер на светлом и белый на градиенте) — у каждой свой цикл.
+document.querySelectorAll('.eq-demo svg').forEach(svg => {
   const N = 15, W = 7, X = i => 32.5 + i*12;
   const mk = i => { const r = document.createElementNS('http://www.w3.org/2000/svg','rect'); r.setAttribute('x', X(i)); r.setAttribute('width', W); r.setAttribute('rx', W/2); svg.appendChild(r); return r; };
   const bars = Array.from({length:N}, (_,i) => mk(i)), segs = Array.from({length:N}, (_,i) => mk(i));
@@ -79,7 +79,7 @@ document.addEventListener('play', e => {
   };
   new IntersectionObserver(([e]) => { cancelAnimationFrame(raf); if(e.isIntersecting){ t0 = performance.now(); raf = requestAnimationFrame(tick); } }).observe(svg);
   draw(0,0,0,0);
-})();
+});
 
 // Календарь → плитки: месяц заполняется день за днём, складывается в дорожку из 29 плиток (дни 0–28),
 // моки 0/14/28 поднимаются выше, сессии с коучем 1/7/15/21 темнее, отметка спокойно прыгает по этим ключевым дням.
