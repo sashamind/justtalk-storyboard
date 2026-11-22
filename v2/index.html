@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Вторая версия раскадровки эксплейнера JustTalk Interview Audit. Семь сцен с английским закадром и русским переводом.">
+  <title>JustTalk Interview Audit · Раскадровка V2</title>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&amp;family=Golos+Text:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+  <link rel="stylesheet" href="../styles.css">
+  <style>
+    header.top { margin-bottom: 32px; }
+    .versions { display: flex; flex-wrap: wrap; gap: 8px; }
+    .versions a { text-decoration: none; }
+    .versions a:hover { color: var(--brand); text-decoration: underline; }
+    .versions [aria-current="page"] { background: var(--brand-soft); color: var(--ink); }
+    .versions a:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; }
+    .scene { grid-template-columns: minmax(200px, 1fr) minmax(0, 2fr); }
+    .scene .tc .name { display: block; font-family: var(--body); font-size: 15px; }
+    .vo { font-size: 17px; }
+    .ru { font-size: 15px; margin-top: 4px; }
+    @media (max-width: 640px) {
+      .scene { grid-template-columns: 1fr; gap: 10px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="top">
+      <nav class="versions" aria-label="Версии раскадровки">
+        <a class="chip" href="../index.html">V1 · Interview Sprint</a>
+        <span class="chip" aria-current="page">V2 · Interview Audit</span>
+      </nav>
+      <div class="title">
+        <p class="eyebrow">Раскадровка эксплейнера</p>
+        <h1><span class="accent">JUSTTALK</span> INTERVIEW AUDIT</h1>
+      </div>
+    </header>
+
+    <main class="scenes" aria-label="Сцены и закадровый текст">
+      <article class="scene">
+        <div class="tc"><span class="n">01</span><h2 class="name">Международная карьера</h2></div>
+        <div>
+          <p class="lbl">Голос</p>
+          <p class="vo" lang="en">You’re great at your job and want to work for an international company.</p>
+          <p class="ru">Вы отлично делаете свою работу и хотите работать в международной компании.</p>
+        </div>
+      </article>
+      <article class="scene">
+        <div class="tc"><span class="n">02</span><h2 class="name">Собеседование на английском</h2></div>
+        <div>
+          <p class="lbl">Голос</p>
+          <p class="vo" lang="en">But your English can hold you back in interviews.</p>
+          <p class="ru">Но на собеседовании английский может помешать вам показать, на что вы способны.</p>
+        </div>
+      </article>
+      <article class="scene">
+        <div class="tc"><span class="n">03</span><h2 class="name">Первый шаг</h2></div>
+        <div>
+          <p class="lbl">Голос</p>
+          <p class="vo" lang="en">Start with the JustTalk Interview Audit.</p>
+          <p class="ru">Начните с JustTalk Interview Audit.</p>
+        </div>
+      </article>
+      <article class="scene">
+        <div class="tc"><span class="n">04</span><h2 class="name">Пробное интервью</h2></div>
+        <div>
+          <p class="lbl">Голос</p>
+          <p class="vo" lang="en">It’s a live mock interview tailored to your CV and the role you’re applying for.</p>
+          <p class="ru">Это пробное интервью с экспертом, подготовленное по вашему резюме и под роль, на которую вы претендуете.</p>
+        </div>
+      </article>
+      <article class="scene">
+        <div class="tc"><span class="n">05</span><h2 class="name">Отчёт</h2></div>
+        <div>
+          <p class="lbl">Голос</p>
+          <p class="vo" lang="en">Within twenty-four hours, you’ll get a report on what works, what falls short, and what to fix first.</p>
+          <p class="ru">В течение суток вы получите отчёт. В нём будет видно, что уже получается, чего не хватает в ответах и что исправить первым.</p>
+        </div>
+      </article>
+      <article class="scene">
+        <div class="tc"><span class="n">06</span><h2 class="name">Возможность продолжить</h2></div>
+        <div>
+          <p class="lbl">Голос</p>
+          <p class="vo" lang="en">Want to keep going? We have a twenty-eight-day Interview Sprint.</p>
+          <p class="ru">Хотите продолжить? У нас есть 28-дневный спринт по подготовке к собеседованиям.</p>
+        </div>
+      </article>
+      <article class="scene">
+        <div class="tc"><span class="n">07</span><h2 class="name">Финал</h2></div>
+        <div>
+          <p class="lbl">Голос</p>
+          <p class="vo" lang="en">Just talk. Start with the Interview Audit.</p>
+          <p class="ru">Просто говорите. Начните с аудита.</p>
+        </div>
+      </article>
+    </main>
+  </div>
+</body>
+</html>
